@@ -2,8 +2,9 @@ from time import sleep
 from wsgiref import headers
 from bs4 import BeautifulSoup
 import requests
+from kafka import KafkaProducer
 
-
+#fetching raw data from allrecipes.com
 def fetch_raw(recipe_url):
     html = None
     print('proccessing..{}'.format(recipe_url))
@@ -43,6 +44,29 @@ def get_recipes():
         print(str(exception))
 
 
+#publishing message
+def publish_message(procuder_instance, topic_name, key, value):
+    try:
+        key_bytes = bytes(key, encoding='utf-8')
+        value_bytes = bytes(value, encoding='utf-8')
+        procuder_instance.send(topic_name, key=key_bytes, value=value_bytes)
+        procuder_instance.flush() #Python automatically flushes the files when closing them. But i want to flush the data before closing any file.
+        print("Message published successfully.")
+    except Exception as exception:
+        print("exception in publishing message")
+        print(str(exception))
+
+
+#connecting kafka
+def connect_kafka_producer():
+    _producer =  None
+    try:
+        _producer = KafkaProducer(bootstrap_servers=['localhost:9092'], api_version =(0,10))
+    except Exception as exception:
+        print("exception while connecting kafka")
+        print(str(exception))
+    finally:
+        return _producer
 
 
 
