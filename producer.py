@@ -66,7 +66,7 @@ def connect_kafka_producer():
         print("exception while connecting kafka")
         print(str(exception))
     finally:
-        return _producer
+        return _prod
 
 
 
